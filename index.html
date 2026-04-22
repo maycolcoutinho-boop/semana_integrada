@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana Acadêmica Integrada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #f4f3ee;
+  --surf:   #ffffff;
+  --surf2:  #edecea;
+  --bd:     #dddbd2;
+  --bd2:    #c6c3b6;
+  --txt:    #1c1b16;
+  --muted:  #6b6960;
+  --faint:  #a09d94;
+  --acc:    #2b4a8c;
+  --asoft:  #e5ecf8;
+  --atxt:   #1a3268;
+  --r:      9px;
+  --rs:     5px;
+  --sh:     0 1px 2px rgba(0,0,0,.06), 0 3px 10px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #121210;
+    --surf:  #1c1c18;
+    --surf2: #232320;
+    --bd:    #2a2a24;
+    --bd2:   #38382e;
+    --txt:   #edeae0;
+    --muted: #989689;
+    --faint: #545248;
+    --acc:   #7aa2e0;
+    --asoft: #172040;
+    --atxt:  #a6c1f0;
+  }
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+
+/* ── HEADER ── */
+#hdr { background: var(--surf); border-bottom: 1px solid var(--bd); position: sticky; top: 0; z-index: 50; }
+.hdr-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 28px; flex-wrap: wrap; }
+.brand-lbl { font-size: 10px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; color: var(--faint); margin-bottom: 2px; }
+.brand-ttl { font-family: 'Lora', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--txt); line-height: 1.2; }
+.hdr-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+.stat-pill { background: var(--surf2); border: 1px solid var(--bd); border-radius: var(--rs); padding: 5px 11px; text-align: center; min-width: 58px; }
+.stat-v { font-size: 16px; font-weight: 500; color: var(--txt); line-height: 1; }
+.stat-l { font-size: 10px; color: var(--faint); margin-top: 1px; }
+.vdiv   { width: 1px; height: 32px; background: var(--bd); flex-shrink: 0; }
+.upbtn { display: inline-flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 13px; border-radius: var(--rs); border: 1px solid var(--bd2); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.upbtn:hover { border-color: var(--acc); color: var(--acc); background: var(--asoft); }
+
+/* ── CALENDAR STRIP ── */
+#cal-wrap { background: var(--surf); border-bottom: 1px solid var(--bd); padding: 12px 28px 14px; }
+.cal-title { font-size: 11px; font-weight: 500; color: var(--faint); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; }
+#cal { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+#cal::-webkit-scrollbar { height: 3px; }
+#cal::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+.cal-day {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 14px; border-radius: var(--r);
+  border: 1px solid var(--bd); background: var(--surf2);
+  cursor: pointer; transition: all .15s; flex-shrink: 0; min-width: 78px;
+  position: relative;
+}
+.cal-day:hover { border-color: var(--bd2); }
+.cal-day.on {
+  background: var(--acc); border-color: var(--acc);
+}
+.cal-day .dow { font-size: 11px; font-weight: 500; color: var(--faint); margin-bottom: 3px; }
+.cal-day .dn  { font-family: 'Lora', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--txt); line-height: 1; }
+.cal-day .month { font-size: 10px; color: var(--faint); margin-top: 2px; }
+.cal-day .cnt { font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--bd); width: 100%; text-align: center; }
+.cal-day.on .dow, .cal-day.on .dn, .cal-day.on .month { color: rgba(255,255,255,.85); }
+.cal-day.on .cnt { color: rgba(255,255,255,.9); border-top-color: rgba(255,255,255,.25); }
+.cal-day .dots { display: flex; gap: 3px; justify-content: center; margin-top: 5px; flex-wrap: wrap; max-width: 60px; }
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.cal-day.on .cal-dot { opacity: .8; }
+
+/* ── CONTROLS ── */
+.ctrl-bar { background: var(--surf); border-bottom: 1px solid var(--bd); padding: 8px 28px 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ctrl-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.csep { width: 1px; height: 16px; background: var(--bd); flex-shrink: 0; align-self: center; }
+.clbl { font-size: 11px; color: var(--faint); white-space: nowrap; }
+.srch-wrap { position: relative; }
+.srch-wrap svg { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .35; }
+.srch { font-family: 'Inter', sans-serif; font-size: 13px; padding: 6px 10px 6px 28px; border: 1px solid var(--bd2); border-radius: var(--rs); background: var(--surf); color: var(--txt); width: 185px; outline: none; transition: border-color .15s; }
+.srch:focus { border-color: var(--acc); }
+.srch::placeholder { color: var(--faint); }
+
+.chip, .grpbtn, .clearbtn {
+  font-family: 'Inter', sans-serif; font-size: 12px; padding: 3px 10px;
+  border-radius: 20px; border: 1px solid var(--bd); background: transparent;
+  color: var(--muted); cursor: pointer; transition: all .12s; white-space: nowrap; line-height: 1.6;
+}
+.chip:hover, .grpbtn:hover { border-color: var(--bd2); color: var(--txt); }
+.chip.on { background: var(--asoft); border-color: var(--acc); color: var(--atxt); font-weight: 500; }
+.grpbtn { border-radius: var(--rs); }
+.grpbtn.on { background: var(--surf2); border-color: var(--bd2); color: var(--txt); font-weight: 500; }
+
+.clearbtn {
+  border-radius: var(--rs); display: inline-flex; align-items: center; gap: 4px;
+  border-color: var(--bd2); color: var(--muted);
+}
+.clearbtn:hover { border-color: #c0392b; color: #c0392b; background: #fdecea; }
+.clearbtn.hidden { display: none; }
+
+/* ── DETAIL BAR ── */
+#det-bar { display: none; background: var(--asoft); border: 1px solid var(--acc); border-radius: var(--r); padding: 9px 14px; margin-bottom: 14px; flex-wrap: wrap; gap: 16px; align-items: center; }
+.det-it  { display: flex; flex-direction: column; gap: 1px; }
+.det-k   { font-size: 10px; color: var(--atxt); text-transform: uppercase; letter-spacing: .7px; opacity: .65; }
+.det-v   { font-size: 13px; color: var(--atxt); font-weight: 500; }
+.det-cls { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 17px; color: var(--atxt); opacity: .4; line-height: 1; align-self: center; padding: 0 2px; font-family: sans-serif; }
+.det-cls:hover { opacity: 1; }
+
+/* ── MAIN ── */
+#main { padding: 20px 28px 48px; }
+
+/* ── LEGEND ── */
+#legend { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; align-items: center; }
+.leg-it { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); background: var(--surf); border: 1px solid var(--bd); border-radius: var(--rs); padding: 2px 8px; }
+.leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── BOARD ── */
+#board-wrap { overflow-x: auto; overflow-y: visible; padding-bottom: 12px; width: 100%; }
+#board-wrap::-webkit-scrollbar { height: 5px; }
+#board-wrap::-webkit-scrollbar-track { background: var(--surf2); border-radius: 3px; }
+#board-wrap::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 3px; }
+#board { display: inline-flex; gap: 10px; align-items: flex-start; min-width: 100%; }
+
+.col { width: 234px; flex-shrink: 0; background: var(--surf2); border-radius: var(--r); border: 1px solid var(--bd); padding-bottom: 8px; }
+.col-head { padding: 11px 12px 10px; border-bottom: 1px solid var(--bd); margin-bottom: 6px; }
+.col-nm   { font-size: 13px; font-weight: 500; color: var(--txt); line-height: 1.3; }
+.col-nm-d { font-family: 'Lora', Georgia, serif; font-size: 17px; font-weight: 600; color: var(--txt); line-height: 1.2; }
+.col-meta { font-size: 11px; color: var(--faint); margin-top: 3px; }
+.col-cards { padding: 0 7px; }
+
+.card { border: 1px solid var(--bd); border-radius: var(--rs); padding: 9px 10px; background: var(--surf); cursor: pointer; margin-bottom: 5px; transition: border-color .12s, box-shadow .12s; }
+.card:hover      { border-color: var(--bd2); box-shadow: var(--sh); }
+.card:last-child { margin-bottom: 0; }
+.card.sel        { border-color: var(--acc) !important; border-width: 1.5px; box-shadow: 0 0 0 3px var(--asoft); }
+
+.c-sub  { font-size: 11px; color: var(--muted); margin-bottom: 5px; font-style: italic; }
+.c-tipo { font-size: 12px; font-weight: 500; color: var(--txt); margin-bottom: 7px; line-height: 1.4; }
+.c-nome { font-size: 11px; color: var(--muted); margin-bottom: 7px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.c-date { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 3px; background: var(--surf2); border: 1px solid var(--bd); color: var(--muted); margin-bottom: 6px; }
+.c-loc  { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 3px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 7px; line-height: 1.5; }
+.c-foot { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+.c-pub  { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 3px; line-height: 1.5; flex-shrink: 0; }
+.c-vag  { font-size: 11px; color: var(--faint); white-space: nowrap; }
+
+/* ── EMPTY ── */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 24px; text-align: center; width: 360px; flex-shrink: 0; }
+.empty-t { font-size: 15px; color: var(--muted); }
+.empty-s { font-size: 12px; color: var(--faint); margin-top: 4px; }
+
+/* ── DROP OVERLAY ── */
+#drop-ov { display: none; position: fixed; inset: 0; background: rgba(43,74,140,.15); z-index: 200; align-items: center; justify-content: center; pointer-events: none; }
+#drop-ov.active { display: flex; }
+.drop-box { background: var(--surf); border: 2px dashed var(--acc); border-radius: var(--r); padding: 32px 52px; text-align: center; font-size: 14px; font-weight: 500; color: var(--acc); }
+.drop-sub { font-size: 12px; color: var(--muted); margin-top: 6px; font-weight: 400; }
+
+/* ── TOAST ── */
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--txt); color: var(--bg); padding: 8px 20px; border-radius: var(--rs); font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .25s, transform .25s; z-index: 999; white-space: nowrap; pointer-events: none; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  .hdr-top   { padding: 12px 16px; }
+  #cal-wrap  { padding: 10px 16px 12px; }
+  .ctrl-bar  { padding: 8px 16px 10px; gap: 7px; }
+  #main      { padding: 16px 16px 40px; }
+  .brand-ttl { font-size: 18px; }
+  .srch      { width: 140px; }
+  .hdr-right .stat-pill { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="drop-ov">
+  <div class="drop-box">
+    Solte o CSV ou HTML exportado do Notion
+    <div class="drop-sub">Os dados serão atualizados automaticamente</div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header id="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="brand-lbl">Programação de Atividades</div>
+      <h1 class="brand-ttl">Semana Acadêmica Integrada</h1>
+    </div>
+    <div class="hdr-right">
+      <div id="stats" style="display:flex;gap:6px"></div>
+      <div class="vdiv"></div>
+      <label class="upbtn" for="file-input">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10M4 4l4-3 4 3M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Carregar CSV / HTML
+      </label>
+      <input type="file" id="file-input" accept=".html,.csv" style="display:none">
+    </div>
+  </div>
+</header>
+
+<!-- CALENDAR STRIP -->
+<div id="cal-wrap">
+  <div class="cal-title">Maio de 2026 — Selecione um dia para filtrar</div>
+  <div id="cal"></div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl-bar">
+  <div class="srch-wrap">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input class="srch" id="srch" type="text" placeholder="Buscar curso, tipo, local…">
+  </div>
+  <div class="csep"></div>
+  <div class="ctrl-row">
+    <span class="clbl">Público</span>
+    <div id="pub-chips" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+  </div>
+  <div class="csep"></div>
+  <div class="ctrl-row">
+    <span class="clbl">Horário</span>
+    <div id="hor-chips" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+  </div>
+  <div class="csep"></div>
+  <div class="ctrl-row">
+    <span class="clbl">Agrupar</span>
+    <div id="grp-btns" style="display:flex;gap:4px"></div>
+  </div>
+  <div class="csep"></div>
+  <button class="clearbtn hidden" id="clear-btn" onclick="clearAll()">
+    <svg width="11" height="11" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Limpar filtros
+  </button>
+</div>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="det-bar"></div>
+  <div id="legend"></div>
+  <div id="board-wrap"><div id="board"></div></div>
+</main>
+
+<script>
+// ═══════════════════════════════
+//  DATA (gerado do CSV)
+// ═══════════════════════════════
+let ITEMS = [
+  {"id":0,"curso":"Ed. Física","tipo":"Encerramento","nome":"Palestra de Encerramento (Tema a definir)","local":"SALA DE AULA","publico":"Curso","vagas":"80","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":1,"curso":"Biomedicina/Farmácia","tipo":"Palestra - Saúde","nome":"A Ciência por trás da vida","local":"AUDITÓRIO VERDE","publico":"Integrada","vagas":"500","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":2,"curso":"Biomedicina/Farmácia","tipo":"Palestra - Saúde","nome":"Inovação e Ciência na Promoção da Saúde Humana","local":"SALA DE AULA","publico":"Integrada","vagas":"80","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":3,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Biomarcadores e saúde: entendendo o corpo na prática","local":"","publico":"Integrada","vagas":"50","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":4,"curso":"Odonto","tipo":"Ciclo de Palestras","nome":"Palestras com Especialistas Externos. Ex. Cirurgia Ortognática: Do Analógico ao Digital","local":"AUDITÓRIO VERMELHO","publico":"Curso","vagas":"250","horario":"Matutino","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":5,"curso":"Adm/Mkt","tipo":"Palestra - Negócios","nome":"Gestão de Negócios na Era da Competitividade: Estratégias para Inovação, Crescimento e Sustentabilidade Empresarial","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":6,"curso":"Ed. Física","tipo":"Mesa Redonda - Externos","nome":"Debate Temático com Convidados","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":7,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Primeiros Socorros","local":"","publico":"Integrada","vagas":"50","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":8,"curso":"Ed. Física","tipo":"Ciclo de Oficinas","nome":"Oficinas Práticas (Temas a definir. Ex. Oficina de mobilidade; oficina de recreação)","local":"SALA DE AULA","publico":"Aberto ao Público","vagas":"80","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":9,"curso":"Psicologia","tipo":"Palestra","nome":"Palestra de Interesse Geral","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":10,"curso":"Nutrição","tipo":"Palestra - Saúde","nome":"Comer além dos nutrientes: comportamento alimentar e bem-estar psíquico","local":"SALA DE AULA","publico":"Integrada","vagas":"60","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":11,"curso":"Enfermagem","tipo":"Oficina - Saúde","nome":"Atividade Prática de Simulação Realística","local":"LABORATÓRIO","publico":"Curso","vagas":"40","horario":"Matutino","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":12,"curso":"Veterinária","tipo":"Palestra","nome":"Terapia Assistida por Animais","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":13,"curso":"Odonto","tipo":"Palestra - Estética","nome":"Palestras interdisciplinares. Ex. Atendimento Humanizado a Pacientes PNE; Estética na Harmonização Orofacial","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":14,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Estética","nome":"O futuro da estética: Princípios da Regeneração Tecidual","local":"SALA DE AULA","publico":"Integrada","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":15,"curso":"Arquit./Eng. Civil","tipo":"Minicurso","nome":"BIM do zero à interoperabilidade","local":"LABORATÓRIO","publico":"Curso","vagas":"60","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":16,"curso":"Arquit./Eng. Civil","tipo":"Oficina","nome":"Maquete em 90 minutos","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":17,"curso":"Tecnologias","tipo":"Palestra - Negócios","nome":"Palestra SEBRAE: Design Thinking para Inovação","local":"AUDITÓRIO VERDE","publico":"Integrada","vagas":"500","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":18,"curso":"Pedagogia","tipo":"Minicurso - Educação","nome":"Brincadeiras e Jogos Pedagógicos na Prática","local":"","publico":"Integrada","vagas":"60","horario":"","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":19,"curso":"Tecnologias","tipo":"Gamificação","nome":"Hackathon (Formação de Equipes - Prof. Romes) no Auditório Vermelho | Competição de Games nos Laboratórios 12 e 9.","local":"AUDITÓRIO VERMELHO","publico":"Curso","vagas":"250","horario":"Matutino","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":20,"curso":"Veterinária","tipo":"Palestra - Tecnologia/IA","nome":"Uso das tecnologias digitais nas ciências da saúde","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":21,"curso":"Radiologia","tipo":"Palestra","nome":"Palestra com Convidados Externos","local":"SALA DE AULA","publico":"Curso","vagas":"120","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":22,"curso":"Fisioterapia","tipo":"Ciclo de Oficinas","nome":"Oficinas Temáticas (Áreas de Interesse dos estudantes do curso)","local":"SALA DE AULA","publico":"Curso","vagas":"80","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":23,"curso":"Psicologia","tipo":"Minicurso","nome":"Temática Específica em Psicologia","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Matutino","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":24,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Interpretação de exames e metabolismo na prática clínica","local":"SALA DE AULA","publico":"Integrada","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":25,"curso":"Ed. Física","tipo":"Minicurso - Práticas clínicas","nome":"Tema a definir. Ex. Treinamento de força no controle autonômico cardíaco","local":"SALA DE AULA","publico":"Curso","vagas":"?","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":26,"curso":"Tecnologias","tipo":"Gamificação","nome":"Atividade Codeplac: Bingo Personalizado e Jogatina de Clash Royale","local":"AUDITÓRIO VERMELHO","publico":"Curso","vagas":"250","horario":"Tarde","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":27,"curso":"Odonto","tipo":"Exposição Poster","nome":"Apresentação de Banner Científico","local":"BIBLIOTECA","publico":"Aberto ao Público","vagas":"200","horario":"Matutino e Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":28,"curso":"Odonto","tipo":"Mesa Redonda - Externos","nome":"Ex. Residência e Concursos / Egressos?","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Matutino","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":29,"curso":"Pedagogia","tipo":"Oficina","nome":"Gamificação na Educação","local":"LABORATÓRIO DE INFORMÁTICA","publico":"Integrada","vagas":"60","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":30,"curso":"Adm/Mkt","tipo":"Palestra - Tecnologia/IA","nome":"Inteligência Artificial Aplicada à Gestão de Negócios: Como Empresas Estão Tomando Decisões Baseadas em Dados","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":31,"curso":"Psicologia","tipo":"Palestra","nome":"Palestra de Interesse Geral","local":"SALA DE AULA","publico":"Integrada","vagas":"","horario":"Matutino e Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":32,"curso":"Estética","tipo":"Palestra - Estética","nome":"Tendências e Práticas em Estética Facial","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":33,"curso":"Nutrição","tipo":"Palestra - Saúde","nome":"Suplementos ergogênicos: entre o marketing e a ciência","local":"SALA DE AULA","publico":"Integrada","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":34,"curso":"Pedagogia","tipo":"Minicurso - Educação","nome":"Técnicas de Redação","local":"SALA DE AULA","publico":"Integrada","vagas":"80","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":35,"curso":"Enfermagem","tipo":"Encerramento","nome":"Palestra Motivacional de Encerramento","local":"AUDITÓRIO VERDE","publico":"Curso","vagas":"500","horario":"","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":36,"curso":"Fisioterapia","tipo":"Exposição Poster","nome":"Exposição dos Melhores Trabalhos de TCC","local":"BIBLIOTECA","publico":"Aberto ao Público","vagas":"200","horario":"Matutino e Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":37,"curso":"Veterinária","tipo":"Palestra","nome":"Programa de Microchipagem e Posse Responsável (Política Nacional de Manejo Ético de cães e gatos)","local":"SALA DE AULA","publico":"Integrada","vagas":"120","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":38,"curso":"Arquit./Eng. Civil","tipo":"Gamificação","nome":"Pontes de Macarrão","local":"ESPAÇO COMPARTILHAR","publico":"Aberto ao Público","vagas":"100","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":39,"curso":"Estética","tipo":"Palestra - Estética","nome":"Técnicas e Inovações na Estética Corporal","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":40,"curso":"Arquit./Eng. Civil","tipo":"Palestra","nome":"Mobilidade, acessibilidade e direito à cidade","local":"AUDITÓRIO VERDE","publico":"Integrada","vagas":"500","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":41,"curso":"Tecnologias","tipo":"Exposição Poster","nome":"Atividade Codeplac: Apresentação de Banners (Prof. Sebastião) – Em frente aos Auditórios.","local":"HALL DOS AUDITÓRIOS","publico":"Aberto ao Público","vagas":"40","horario":"Matutino e Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":42,"curso":"Odonto","tipo":"Minicurso","nome":"Teoria e Demonstrativa. Ex. L-PRF","local":"SALA DE AULA","publico":"Curso","vagas":"60","horario":"Matutino","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":43,"curso":"Direito","tipo":"Palestra - Tecnologia/IA","nome":"Inteligência Artificial e o Futuro do Direito: Transformações, Desafios e Novas Perspectivas para as Carreiras Jurídicas","local":"AUDITÓRIO VERMELHO","publico":"Curso","vagas":"250","horario":"Matutino","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":44,"curso":"Tecnologias","tipo":"Palestra - Tecnologia/IA","nome":"Palestra com a G4F (Primeira Parte) no auditório vermelho.","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":45,"curso":"Radiologia","tipo":"Mesa Redonda - Externos","nome":"Presença de Membros do Conselho de Classe. Inclui Coffee Break.","local":"SALA DE AULA","publico":"Curso","vagas":"120","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":46,"curso":"Tecnologias","tipo":"Gamificação","nome":"Hackathon: Encerramento e Apresentação de Projetos (Prof. Romes) nos Laboratórios 12 e 9.","local":"LABORATÓRIOS DE INFORMÁTICA","publico":"Curso","vagas":"60","horario":"Tarde","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":47,"curso":"Integrada","tipo":"Cultural","nome":"Monólogo Antonieta de Barros","local":"ESPAÇO COMPARTILHAR","publico":"Aberto ao Público","vagas":"100","horario":"Matutino e Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":48,"curso":"Tecnologias","tipo":"Palestra - Tecnologia/IA","nome":"Atividade Codeplac: Palestra com Geovanne sobre 'Guardião Cibernético' e Sessão de Autógrafos","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":49,"curso":"Nutrição","tipo":"Oficina","nome":"Projeto Prato Consciente - Sociedade Vegetariana Brasileira (SVB)","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":50,"curso":"Nutrição","tipo":"Oficina - Saúde","nome":"Aproveitamento Integral de Alimentos","local":"SALA DE AULA","publico":"Integrada","vagas":"30","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":51,"curso":"Arquit./Eng. Civil","tipo":"Minicurso","nome":"Conforto térmico e iluminação natural","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":52,"curso":"Nutrição","tipo":"Oficina - Saúde","nome":"Receitas Fit: Elaboração e Técnica Dietética","local":"DIETÉTICA","publico":"Integrada","vagas":"30","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":53,"curso":"Veterinária","tipo":"Ciclo de Palestras","nome":"Acidente com animais peçonhentos e saúde pública; Resistência antimicrobiana","local":"AUDITÓRIO VERDE","publico":"Integrada","vagas":"500","horario":"Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":54,"curso":"Direito","tipo":"Mesa Redonda - Externos","nome":"Participação da Comissão da Igualdade Racial da OAB Gama/DF","local":"AUDITÓRIO VERDE","publico":"Integrada","vagas":"500","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":55,"curso":"Tecnologias","tipo":"Gamificação","nome":"Atividade Codeplac: Competição Codeplac nos Laboratórios 2/3, 4 e 5.","local":"LABORATÓRIOS DE INFORMÁTICA","publico":"Curso","vagas":"60","horario":"Matutino","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":56,"curso":"Arquit./Eng. Civil","tipo":"Minicurso","nome":"QGIS aplicado à leitura urbana","local":"LABORATÓRIO","publico":"Curso","vagas":"60","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":57,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Decifrando medicamentos: da farmacologia à prática","local":"","publico":"Integrada","vagas":"50","horario":"","data":"30 de maio de 2026","dia":"30/05"},
+  {"id":58,"curso":"Tecnologias","tipo":"Palestra - Negócios","nome":"Palestra SEBRAE: Pitch - Aprenda a apresentar seu produto ou serviço rapidamente","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Matutino","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":59,"curso":"Nutrição","tipo":"Palestra - Saúde","nome":"Da recusa alimentar ao risco nutricional: como identificar sinais de alerta na prática clínica","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":60,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Prescrição farmacêutica na prática: protocolos e condutas","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":61,"curso":"Integrada","tipo":"Cultural","nome":"Roda de Capoeira","local":"ESPAÇO COMPARTILHAR","publico":"Aberto ao Público","vagas":"100","horario":"Matutino e Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":62,"curso":"Tecnologias","tipo":"Palestra - Tecnologia/IA","nome":"Palestra SEBRAE: Sucesso na Era da Inteligência Artificial","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":63,"curso":"Arquit./Eng. Civil","tipo":"Palestra - Tecnologia/IA","nome":"IA, openBIM e o novo perfil profissional","local":"SALA DE AULA","publico":"Curso","vagas":"80","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":64,"curso":"Tecnologias","tipo":"Exposição Poster","nome":"Atividade Codeplac: Apresentação de Banners (Prof. Rômulo) – Em frente aos Auditórios.","local":"HALL DOS AUDITÓRIOS","publico":"Aberto ao Público","vagas":"40","horario":"Matutino e Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":65,"curso":"Pedagogia","tipo":"Oficina","nome":"Gamificação na Educação","local":"LABORATÓRIO DE INFORMÁTICA","publico":"Integrada","vagas":"60","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":66,"curso":"Pedagogia","tipo":"Oficina","nome":"A arte de desenvolver atividades manuais (boneca abayomi e colcha de retalhos)","local":"SALA DE AULA","publico":"Integrada","vagas":"60","horario":"Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":67,"curso":"Fisioterapia","tipo":"Ciclo de Oficinas","nome":"Oficinas Temáticas (Áreas de Interesse dos estudantes do curso)","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":68,"curso":"Pedagogia","tipo":"Oficina","nome":"A arte de desenvolver atividades manuais (boneca abayomi e colcha de retalhos)","local":"SALA DE AULA","publico":"Integrada","vagas":"60","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":69,"curso":"Nutrição","tipo":"Oficina - Saúde","nome":"Avaliação Nutricional na Prática","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":70,"curso":"Odonto","tipo":"Oficina","nome":"Prática com especialistas da área","local":"SALA DE AULA","publico":"Curso","vagas":"A definir","horario":"Matutino","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":71,"curso":"Veterinária","tipo":"Palestra","nome":"Medicina Integrativa na Medicina Veterinária","local":"AUDITÓRIO VERDE","publico":"Curso","vagas":"500","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":72,"curso":"Psicologia","tipo":"Minicurso","nome":"Temática Específica em Psicologia","local":"SALA DE AULA","publico":"Curso","vagas":"50","horario":"Matutino","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":73,"curso":"Arquit./Eng. Civil","tipo":"Mostra Permanente","nome":"Exposição - Mostra Permanente","local":"CORREDOR BIBLIOTECA BLOCO E/F","publico":"Aberto ao Público","vagas":"100","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":74,"curso":"Estética","tipo":"Estandes de patrocinadores","nome":"Visitação aos estandes e sorteio de brindes das empresas.","local":"ESPAÇO COMPARTILHAR","publico":"Aberto ao Público","vagas":"Aberto","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":75,"curso":"Tecnologias","tipo":"Palestra - Tecnologia/IA","nome":"Palestra com a G4F (Segunda Parte) no auditório vermelho.","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":76,"curso":"Fisioterapia","tipo":"Palestra","nome":"Palestra com Fisioterapeuta Externo","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":77,"curso":"Radiologia","tipo":"Ciclo de Palestras","nome":"02 Palestras com Especialistas Externos","local":"SALA DE AULA","publico":"Curso","vagas":"120","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":78,"curso":"Biomedicina/Farmácia","tipo":"Minicurso - Práticas clínicas","nome":"Peptídeos antioxidantes e fatores de crescimento","local":"SALA DE AULA","publico":"Integrada","vagas":"50","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":79,"curso":"Arquit./Eng. Civil","tipo":"Palestra","nome":"Descarbonização da construção","local":"SALA DE AULA","publico":"Curso","vagas":"120","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":80,"curso":"Arquit./Eng. Civil","tipo":"Oficina","nome":"Collage Lab: criando atmosferas","local":"SALA DE AULA","publico":"Curso","vagas":"80","horario":"Noturno","data":"25 de maio de 2026","dia":"25/05"},
+  {"id":81,"curso":"Veterinária","tipo":"Ciclo de Palestras","nome":"Biópsia transcirúrgica em pequenos animais; Manejo de Animais Silvestres","local":"LABORATÓRIO","publico":"Curso","vagas":"60","horario":"Matutino e Noturno","data":"28 de maio de 2026","dia":"28/05"},
+  {"id":82,"curso":"Tecnologias","tipo":"Palestra - Tecnologia/IA","nome":"Palestra: Internet das Coisas (IoT).","local":"AUDITÓRIO VERMELHO","publico":"Integrada","vagas":"250","horario":"Noturno","data":"29 de maio de 2026","dia":"29/05"},
+  {"id":83,"curso":"Psicologia","tipo":"Cultural","nome":"Sarau: Música, Poemas e Encenações","local":"ESPAÇO COMPARTILHAR","publico":"Integrada","vagas":"Aberto","horario":"Matutino e Noturno","data":"27 de maio de 2026","dia":"27/05"},
+  {"id":84,"curso":"Veterinária","tipo":"Palestra","nome":"Comportamento de equinos e a condução clínica","local":"SALA DE AULA","publico":"Curso","vagas":"120","horario":"Noturno","data":"26 de maio de 2026","dia":"26/05"},
+  {"id":85,"curso":"Ed. Física","tipo":"Oficina - Saúde","nome":"Oficina de Mobilidade ou Recreação","local":"QUADRA","publico":"Integrada","vagas":"150","horario":"Matutino","data":"30 de maio de 2026","dia":"30/05"}
+];
+
+// ═══════════════════════════════
+//  CALENDAR CONFIG
+// ═══════════════════════════════
+const CAL_DAYS = [
+  {dia:'25/05', dn:'25', dow:'Seg', month:'maio'},
+  {dia:'26/05', dn:'26', dow:'Ter', month:'maio'},
+  {dia:'27/05', dn:'27', dow:'Qua', month:'maio'},
+  {dia:'28/05', dn:'28', dow:'Qui', month:'maio'},
+  {dia:'29/05', dn:'29', dow:'Sex', month:'maio'},
+  {dia:'30/05', dn:'30', dow:'Sáb', month:'maio'},
+];
+
+// ═══════════════════════════════
+//  COLORS
+// ═══════════════════════════════
+function locClr(l) {
+  if (!l) return {bg:'#edecea',tx:'#6b6960'};
+  if (l.includes('AUDITÓRIO VERDE'))                           return {bg:'#b6eed6',tx:'#0a5c38'};
+  if (l.includes('AUDITÓRIO VERMELHO'))                        return {bg:'#ffc4c4',tx:'#8b1a1a'};
+  if (l.includes('SALA DE AULA'))                              return {bg:'#bdd6f6',tx:'#124489'};
+  if (l.includes('LABORATÓRIOS DE INFORMÁTICA') ||
+      l.includes('LABORATÓRIO DE INFORMÁTICA'))                 return {bg:'#d0ccfc',tx:'#3b2fa0'};
+  if (l.includes('LABORATÓRIO'))                               return {bg:'#fdd99c',tx:'#6a4000'};
+  if (l.includes('HALL DOS AUDITÓRIOS'))                       return {bg:'#f6c6de',tx:'#832056'};
+  if (l.includes('ESPAÇO COMPARTILHAR'))                       return {bg:'#ffd0b0',tx:'#7a3000'};
+  if (l.includes('BIBLIOTECA') || l.includes('CORREDOR'))      return {bg:'#cae6a0',tx:'#2c5a08'};
+  if (l.includes('QUADRA') || l.includes('DIETÉTICA'))         return {bg:'#cae6a0',tx:'#2c5a08'};
+  return {bg:'#dddbd2',tx:'#494740'};
+}
+function pubClr(p) {
+  if (p === 'Integrada')         return {bg:'#f6c6de',tx:'#832056'};
+  if (p === 'Aberto ao Público') return {bg:'#fdd99c',tx:'#6a4000'};
+  return {bg:'#dddbd2',tx:'#494740'};
+}
+// dot color per local for calendar
+const DOT_COLORS = [
+  ['AUDITÓRIO VERDE','#0a5c38'],['AUDITÓRIO VERMELHO','#8b1a1a'],
+  ['SALA DE AULA','#124489'],['LABORATÓRIOS DE INFORMÁTICA','#3b2fa0'],
+  ['LABORATÓRIO DE INFORMÁTICA','#3b2fa0'],['LABORATÓRIO','#6a4000'],
+  ['HALL DOS AUDITÓRIOS','#832056'],['ESPAÇO COMPARTILHAR','#7a3000'],
+  ['BIBLIOTECA','#2c5a08'],['CORREDOR','#2c5a08'],['QUADRA','#2c5a08'],
+  ['DIETÉTICA','#2c5a08'],
+];
+function dotColor(local) {
+  for (const [k,c] of DOT_COLORS) if (local.includes(k)) return c;
+  return '#6b6960';
+}
+
+// ═══════════════════════════════
+//  STATE
+// ═══════════════════════════════
+const S = {search:'', pub:'all', hor:'all', dia:'all', group:'curso', sel:null};
+
+// ═══════════════════════════════
+//  HAS ACTIVE FILTERS?
+// ═══════════════════════════════
+function hasFilters() {
+  return S.search || S.pub !== 'all' || S.hor !== 'all' || S.dia !== 'all';
+}
+
+// ═══════════════════════════════
+//  PARSE CSV
+// ═══════════════════════════════
+function parseCSV(text) {
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  if (!lines.length) return [];
+  // Remove BOM
+  const header = lines[0].replace(/^\uFEFF/,'').split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  const find = (keys) => { for (const k of keys) { const i = header.findIndex(h => h === k); if (i >= 0) return i; } return -1; };
+  const ci = {
+    curso: find(['Curso']), tipo: find(['Tipo']), nome: find(['Nome da Atividade']),
+    local: find(['Local']), pub: find(['Abrangência','AbrangÃªncia']),
+    vagas: find(['Vagas']), hor: find(['Horário','HorÃ¡rio']),
+    data: find(['Data sugerida']),
+  };
+  function parseDay(d) { const p = d.trim().toLowerCase().split(' de '); return p.length===3 ? p[0].padStart(2,'0')+'/05' : ''; }
+  function parseRow(line) {
+    const cells = []; let cur='', inQ=false;
+    for (let i=0;i<line.length;i++) {
+      if (line[i]==='"') { inQ=!inQ; }
+      else if (line[i]===',' && !inQ) { cells.push(cur.replace(/^"|"$/g,'').trim()); cur=''; }
+      else cur+=line[i];
+    }
+    cells.push(cur.replace(/^"|"$/g,'').trim());
+    return cells;
+  }
+  const out = [];
+  for (let i=1;i<lines.length;i++) {
+    if (!lines[i].trim()) continue;
+    const c = parseRow(lines[i]);
+    const curso = ci.curso>=0?c[ci.curso]:'';
+    if (!curso) continue;
+    const data = ci.data>=0?c[ci.data]:'';
+    out.push({id:i-1, curso:curso.trim(), tipo:ci.tipo>=0?c[ci.tipo]:'', nome:ci.nome>=0?c[ci.nome].replace(/\n/g,' '):'',
+      local:ci.local>=0?c[ci.local]:'', publico:ci.pub>=0?c[ci.pub]:'',
+      vagas:ci.vagas>=0?c[ci.vagas]:'', horario:ci.hor>=0?c[ci.hor]:'',
+      data:data, dia:parseDay(data)});
+  }
+  return out;
+}
+
+// ═══════════════════════════════
+//  FILTER & GROUP
+// ═══════════════════════════════
+function getFiltered() {
+  const q = S.search.toLowerCase();
+  return ITEMS.filter(it => {
+    if (q && ![it.curso,it.tipo,it.nome,it.local].some(v=>(v||'').toLowerCase().includes(q))) return false;
+    if (S.pub!=='all' && it.publico!==S.pub) return false;
+    if (S.hor!=='all' && it.horario!==S.hor) return false;
+    if (S.dia!=='all' && it.dia!==S.dia) return false;
+    return true;
+  });
+}
+function getGrouped(list) {
+  const map = {};
+  list.forEach(it => { const k=it[S.group]||'—'; (map[k]=map[k]||[]).push(it); });
+  const entries = Object.entries(map);
+  if (S.group==='dia') {
+    const ord=['25/05','26/05','27/05','28/05','29/05','30/05','—'];
+    entries.sort(([a],[b])=>ord.indexOf(a)-ord.indexOf(b));
+  } else {
+    entries.sort(([a],[b])=>a.localeCompare(b,'pt-BR'));
+  }
+  return entries;
+}
+
+// ═══════════════════════════════
+//  RENDER CALENDAR
+// ═══════════════════════════════
+function renderCal() {
+  const cal = document.getElementById('cal');
+  cal.innerHTML = CAL_DAYS.map(({dia,dn,dow,month}) => {
+    const dayItems = ITEMS.filter(i=>i.dia===dia);
+    const cnt = dayItems.length;
+    const locs = [...new Set(dayItems.map(i=>i.local).filter(Boolean))].slice(0,8);
+    const dots = locs.map(l=>`<div class="cal-dot" style="background:${dotColor(l)}"></div>`).join('');
+    const on = S.dia===dia ? ' on' : '';
+    return `<div class="cal-day${on}" onclick="toggleDia('${dia}')">
+      <div class="dow">${dow}</div>
+      <div class="dn">${dn}</div>
+      <div class="month">${month}</div>
+      <div class="dots">${dots}</div>
+      <div class="cnt">${cnt} atividade${cnt!==1?'s':''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  RENDER BOARD
+// ═══════════════════════════════
+function render() {
+  renderCal();
+  const f  = getFiltered();
+  const gs = getGrouped(f);
+
+  // Stats
+  const tv = ITEMS.reduce((s,i)=>{const n=parseInt(i.vagas);return isNaN(n)?s:s+n;},0);
+  document.getElementById('stats').innerHTML=[
+    [ITEMS.length,'atividades'],
+    [tv.toLocaleString('pt-BR'),'vagas'],
+    [new Set(ITEMS.map(i=>i.curso)).size,'cursos'],
+  ].map(([v,l])=>`<div class="stat-pill"><div class="stat-v">${v}</div><div class="stat-l">${l}</div></div>`).join('');
+
+  // Pub chips
+  document.getElementById('pub-chips').innerHTML=
+    ['all','Integrada','Curso','Aberto ao Público'].map(p=>
+      `<button class="chip${S.pub===p?' on':''}" onclick="setPub('${p}')">${p==='all'?'Todos':p}</button>`
+    ).join('');
+
+  // Horário chips — unique non-empty values
+  const hors = [...new Set(ITEMS.map(i=>i.horario).filter(Boolean))].sort();
+  document.getElementById('hor-chips').innerHTML=
+    ['all',...hors].map(h=>
+      `<button class="chip${S.hor===h?' on':''}" onclick="setHor('${h}')">${h==='all'?'Todos':h}</button>`
+    ).join('');
+
+  // Group buttons
+  document.getElementById('grp-btns').innerHTML=
+    [['curso','Curso'],['local','Local'],['dia','Dia'],['publico','Público']].map(([v,l])=>
+      `<button class="grpbtn${S.group===v?' on':''}" onclick="setGrp('${v}')">${l}</button>`
+    ).join('');
+
+  // Clear button visibility
+  const cb = document.getElementById('clear-btn');
+  cb.classList.toggle('hidden', !hasFilters());
+
+  // Detail bar
+  const det = document.getElementById('det-bar');
+  if (S.sel) {
+    det.style.display='flex';
+    det.innerHTML=[
+      ['Curso',S.sel.curso],['Atividade',S.sel.tipo],['Nome',S.sel.nome],
+      ['Local',S.sel.local],['Dia',S.sel.dia?S.sel.dia+' de maio':'—'],
+      ['Horário',S.sel.horario],['Público',S.sel.publico],['Vagas',S.sel.vagas],
+    ].filter(([,v])=>v).map(([k,v])=>
+      `<div class="det-it"><span class="det-k">${k}</span><span class="det-v">${v}</span></div>`
+    ).join('')+`<button class="det-cls" onclick="clearSel()">&#215;</button>`;
+  } else { det.style.display='none'; }
+
+  // Legend
+  const locs=[...new Set(ITEMS.map(i=>i.local).filter(Boolean))].sort();
+  document.getElementById('legend').innerHTML=locs.map(l=>{
+    const c=locClr(l);
+    return `<div class="leg-it"><div class="leg-dot" style="background:${c.bg}"></div>${l}</div>`;
+  }).join('');
+
+  // Board
+  const board=document.getElementById('board');
+  if (!gs.length) {
+    board.innerHTML=`<div class="empty"><div class="empty-t">Nenhuma atividade encontrada</div><div class="empty-s">Ajuste os filtros ou a busca</div></div>`;
+    return;
+  }
+  board.innerHTML=gs.map(([gn,gi])=>{
+    const colV=gi.reduce((s,i)=>{const n=parseInt(i.vagas);return isNaN(n)?s:s+n;},0);
+    const diasGrp=[...new Set(gi.map(i=>i.dia).filter(Boolean))].sort();
+    const cards=gi.map(it=>{
+      const lc=locClr(it.local), pc=pubClr(it.publico);
+      return `<div class="card${S.sel&&S.sel.id===it.id?' sel':''}" onclick="selCard(${it.id})">
+        ${it.curso&&S.group!=='curso'?`<div class="c-sub">${it.curso}</div>`:''}
+        <div class="c-tipo">${it.tipo||'—'}</div>
+        ${it.nome&&it.nome!==it.tipo?`<div class="c-nome">${it.nome}</div>`:''}
+        ${it.dia&&S.group!=='dia'
+          ?`<div class="c-date"><svg width="10" height="10" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M10 1v2M1 6h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>${it.dia}</div>`
+          :''}
+        ${it.local?`<div class="c-loc" style="background:${lc.bg};color:${lc.tx}">${it.local}</div>`:''}
+        <div class="c-foot">
+          ${it.publico?`<span class="c-pub" style="background:${pc.bg};color:${pc.tx}">${it.publico}</span>`:'<span></span>'}
+          ${it.vagas?`<span class="c-vag">${it.vagas} vagas</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    const metaParts=[
+      `${gi.length} atividade${gi.length!==1?'s':''}`,
+      colV?colV.toLocaleString('pt-BR')+' vagas':'',
+      diasGrp.length&&S.group!=='dia'?diasGrp.join(', '):'',
+    ].filter(Boolean).join(' · ');
+    const headName=(S.group==='dia'&&gn!=='—')
+      ?`<div class="col-nm-d">${['Seg','Ter','Qua','Qui','Sex','Sáb'][['25/05','26/05','27/05','28/05','29/05','30/05'].indexOf(gn)]||''} ${gn}</div>`
+      :`<div class="col-nm">${gn}</div>`;
+    return `<div class="col"><div class="col-head">${headName}<div class="col-meta">${metaParts}</div></div><div class="col-cards">${cards}</div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════
+function setPub(p)    { S.pub=p;   render(); }
+function setHor(h)    { S.hor=h;   render(); }
+function setGrp(g)    { S.group=g; render(); }
+function clearSel()   { S.sel=null; render(); }
+function toggleDia(d) { S.dia=S.dia===d?'all':d; render(); }
+function selCard(id)  { const it=ITEMS.find(i=>i.id===id); S.sel=S.sel&&S.sel.id===id?null:it; render(); }
+function clearAll()   { S.search=''; S.pub='all'; S.hor='all'; S.dia='all'; S.sel=null; document.getElementById('srch').value=''; render(); }
+
+let _tt;
+function showToast(msg) {
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function loadFile(file) {
+  if (!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const text=ev.target.result;
+    let parsed=[];
+    if (file.name.endsWith('.csv')) {
+      parsed=parseCSV(text);
+    } else {
+      // HTML parse
+      const doc=new DOMParser().parseFromString(text,'text/html');
+      parsed=[...doc.querySelectorAll('tr')].slice(1).map((row,i)=>{
+        const td=row.querySelectorAll('td'); if(td.length<4)return null;
+        const data=(td[2]?.textContent||'').trim();
+        function parseDay(d){const p=d.toLowerCase().split(' de ');return p.length===3?p[0].padStart(2,'0')+'/05':'';}
+        return{id:i,curso:(td[0]?.textContent||'').trim(),
+          tipo:(td[7]?.textContent||td[1]?.textContent||'').trim(),
+          nome:(td[5]?.textContent||'').trim(),
+          local:(td[4]?.querySelector?.('.selected-value')?.textContent||td[4]?.textContent||'').trim(),
+          publico:(td[1]?.querySelector?.('.selected-value')?.textContent||td[3]?.querySelector?.('.selected-value')?.textContent||'').trim(),
+          vagas:(td[8]?.textContent||td[4]?.textContent||'').trim(),
+          horario:(td[3]?.textContent||'').trim(),
+          data:data, dia:parseDay(data)};
+      }).filter(x=>x&&x.curso);
+    }
+    if (parsed.length){ITEMS=parsed;S.sel=null;render();showToast('✓ '+parsed.length+' atividades carregadas');}
+    else showToast('Nenhuma atividade encontrada no arquivo');
+  };
+  r.readAsText(file,'UTF-8');
+}
+
+document.getElementById('srch').addEventListener('input',e=>{S.search=e.target.value;render();});
+document.getElementById('file-input').addEventListener('change',e=>loadFile(e.target.files[0]));
+document.addEventListener('dragover',e=>{e.preventDefault();document.getElementById('drop-ov').classList.add('active');});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.getElementById('drop-ov').classList.remove('active');});
+document.addEventListener('drop',e=>{e.preventDefault();document.getElementById('drop-ov').classList.remove('active');loadFile(e.dataTransfer.files[0]);});
+
+render();
+</script>
+</body>
+</html>
